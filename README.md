@@ -45,3 +45,29 @@ Don't forget to replace `[version]` with expected version.
 ### Manually
 
 [Download jar here](https://bintray.com/tylerlong/maven/ringcentral-pubnub/_latestVersion) and save it into your java classpath.
+
+
+## Usage
+
+### Subscription & notification
+
+```java
+RestClient rc = new RestClient(clientId, clientSecret, server);
+rc.authorize(username, extension, password);
+
+Subscription subscription = new Subscription(rc,
+    new String[]{
+        "/restapi/v1.0/glip/posts",
+        "/restapi/v1.0/account/~/extension/~/message-store",
+        // more event filters here
+    },
+    (message) -> {
+        // do something with message
+    });
+subscription.subscribe();
+```
+
+
+#### Deserialize notification message
+
+TBD
