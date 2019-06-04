@@ -70,4 +70,8 @@ subscription.subscribe();
 
 #### Deserialize notification message
 
-TBD
+The notification `message` you get is a java `String`. If you know the message body type, you can deserialize it like this:
+
+```java
+InstanceMessageEvent instanceMessageEvent = com.alibaba.fastjson.JSON.parseObject(str, InstanceMessageEvent.class);
+```
