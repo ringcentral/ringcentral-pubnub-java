@@ -24,8 +24,8 @@ class SubscriptionTest {
                 System.getenv("RINGCENTRAL_PASSWORD")
         )
         val subscription = Subscription(rc,
-                arrayOf("/restapi/v1.0/account/~/extension/~/message-store"),
-                null)
+                arrayOf("/restapi/v1.0/account/~/extension/~/message-store")
+        ) { }
         subscription.subscribe()
         val sub = subscription.subscription
         assertEquals("Active", sub.status)
