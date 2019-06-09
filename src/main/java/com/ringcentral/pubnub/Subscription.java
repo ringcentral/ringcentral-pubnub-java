@@ -1,4 +1,4 @@
-package com.ringcentral;
+package com.ringcentral.pubnub;
 
 import com.pubnub.api.PNConfiguration;
 import com.pubnub.api.PubNub;
@@ -6,6 +6,7 @@ import com.pubnub.api.callbacks.SubscribeCallback;
 import com.pubnub.api.models.consumer.PNStatus;
 import com.pubnub.api.models.consumer.pubsub.PNMessageResult;
 import com.pubnub.api.models.consumer.pubsub.PNPresenceEventResult;
+import com.ringcentral.RestClient;
 import com.ringcentral.definitions.CreateSubscriptionRequest;
 import com.ringcentral.definitions.NotificationDeliveryModeRequest;
 import com.ringcentral.definitions.SubscriptionInfo;

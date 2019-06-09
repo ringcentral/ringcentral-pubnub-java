@@ -1,5 +1,7 @@
-package com.ringcentral
+package com.ringcentral.pubnub
 
+import com.ringcentral.RestClient
+import com.ringcentral.RestException
 import com.ringcentral.definitions.CreateSMSMessage
 import com.ringcentral.definitions.MessageStoreCallerInfoRequest
 import org.junit.Assert.*
