@@ -34,6 +34,7 @@ public class SubscriptionJavaTest {
         );
         subscription.subscribe();
         SubscriptionInfo sub = subscription.getSubscription();
+        assert sub != null;
         assertEquals("Active", sub.status);
 
         rc.revoke();
@@ -175,8 +176,9 @@ public class SubscriptionJavaTest {
                 str -> message[0] = str);
         subscription.subscribe();
         SubscriptionInfo subInfo = subscription.getSubscription();
+        assert subInfo != null;
         subInfo.expiresIn = 123L;
-        subscription.setSubscription(subInfo);
+        subscription.setSubscription$ringcentral_pubnub_java(subInfo);
         Thread.sleep(6000);
         sendSms();
         Thread.sleep(16000);

@@ -24,11 +24,17 @@ class SubscriptionTest {
                 System.getenv("RINGCENTRAL_PASSWORD")
         )
         val subscription = Subscription(rc,
-                arrayOf("/restapi/v1.0/account/~/extension/~/message-store")
-        ) { }
+                arrayOf("/restapi/v1.0/account/~/extension/~/message-store"),
+                object : EventListener {
+                    override fun listen(message: String) {
+                        run {
+                        }
+                    }
+                }
+        )
         subscription.subscribe()
         val sub = subscription.subscription
-        assertEquals("Active", sub.status)
+        assertEquals("Active", sub!!.status)
 
         rc.revoke()
     }
@@ -72,20 +78,22 @@ class SubscriptionTest {
                 System.getenv("RINGCENTRAL_PASSWORD")
         )
 
-        var message: String? = null
+        var message2: String? = null
         val subscription = Subscription(rc,
                 arrayOf("/restapi/v1.0/account/~/extension/~/message-store"),
-                EventListener { str ->
-                    run {
-                        message = str
+                object : EventListener {
+                    override fun listen(message: String) {
+                        run {
+                            message2 = message
+                        }
                     }
                 })
         subscription.subscribe()
         Thread.sleep(3000)
         sendSms()
         Thread.sleep(16000)
-        assertNotNull(message)
-        assertTrue(message!!.contains("uuid"))
+        assertNotNull(message2)
+        assertTrue(message2!!.contains("uuid"))
 
         subscription.revoke()
         rc.revoke()
@@ -106,12 +114,14 @@ class SubscriptionTest {
                 System.getenv("RINGCENTRAL_PASSWORD")
         )
 
-        var message: String? = null
+        var message2: String? = null
         val subscription = Subscription(rc,
                 arrayOf("/restapi/v1.0/account/~/extension/~/message-store"),
-                EventListener { str ->
-                    run {
-                        message = str
+                object : EventListener {
+                    override fun listen(message: String) {
+                        run {
+                            message2 = message
+                        }
                     }
                 })
         subscription.refresh() // should not cause any issue when _subscription is null
@@ -121,8 +131,8 @@ class SubscriptionTest {
         Thread.sleep(3000)
         sendSms()
         Thread.sleep(16000)
-        assertNotNull(message)
-        assertTrue(message!!.contains("uuid"))
+        assertNotNull(message2)
+        assertTrue(message2!!.contains("uuid"))
 
         subscription.revoke()
         rc.revoke()
@@ -143,12 +153,14 @@ class SubscriptionTest {
                 System.getenv("RINGCENTRAL_PASSWORD")
         )
 
-        var message: String? = null
+        var message2: String? = null
         val subscription = Subscription(rc,
                 arrayOf("/restapi/v1.0/account/~/extension/~/message-store"),
-                EventListener { str ->
-                    run {
-                        message = str
+                object : EventListener {
+                    override fun listen(message: String) {
+                        run {
+                            message2 = message
+                        }
                     }
                 })
         subscription.revoke() // should not cause any issue when _subscription is null
@@ -158,7 +170,7 @@ class SubscriptionTest {
         Thread.sleep(1000)
         sendSms()
         Thread.sleep(16000)
-        assertNull(message)
+        assertNull(message2)
 
         rc.revoke()
     }
@@ -178,23 +190,27 @@ class SubscriptionTest {
                 System.getenv("RINGCENTRAL_PASSWORD")
         )
 
-        var message: String? = null
+        var message2: String? = null
         val subscription = Subscription(rc,
                 arrayOf("/restapi/v1.0/account/~/extension/~/message-store"),
-                EventListener { str ->
-                    run {
-                        message = str
+                object : EventListener {
+                    override fun listen(message: String) {
+                        run {
+                            message2 = message
+                        }
                     }
                 })
         subscription.subscribe()
         val subInfo = subscription.subscription
-        subInfo.expiresIn = 123L
+        if (subInfo != null) {
+            subInfo.expiresIn = 123L
+        }
         subscription.subscription = subInfo
         Thread.sleep(6000)
         sendSms()
         Thread.sleep(16000)
-        assertNotNull(message)
-        assertTrue(message!!.contains("uuid"))
+        assertNotNull(message2)
+        assertTrue(message2!!.contains("uuid"))
 
         subscription.revoke()
         rc.revoke()
