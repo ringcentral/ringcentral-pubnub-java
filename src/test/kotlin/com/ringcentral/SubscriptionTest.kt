@@ -1,18 +1,10 @@
 package com.ringcentral
 
-import com.pubnub.api.models.consumer.PNStatus
-import com.pubnub.api.models.consumer.pubsub.PNPresenceEventResult
 import com.ringcentral.definitions.CreateSMSMessage
 import com.ringcentral.definitions.MessageStoreCallerInfoRequest
+import org.junit.Assert.*
 import org.junit.Test
-import org.mockito.ArgumentCaptor
-
 import java.io.IOException
-import java.util.function.Consumer
-
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertTrue
-import org.mockito.Mockito.*
 
 class SubscriptionTest {
     @Test
@@ -30,8 +22,8 @@ class SubscriptionTest {
                 System.getenv("RINGCENTRAL_PASSWORD")
         )
         val subscription = Subscription(rc,
-                arrayOf("/restapi/v1.0/account/~/extension/~/message-store")
-        ) { jsonString -> }
+                arrayOf("/restapi/v1.0/account/~/extension/~/message-store"),
+                null)
         subscription.subscribe()
         val sub = subscription.subscription
         assertEquals("Active", sub.status)
@@ -78,19 +70,22 @@ class SubscriptionTest {
                 System.getenv("RINGCENTRAL_PASSWORD")
         )
 
-        val consumer: Consumer<String> = mock(Consumer::class.java) as Consumer<String>
+        var message: String? = null
         val subscription = Subscription(rc,
                 arrayOf("/restapi/v1.0/account/~/extension/~/message-store"),
-                consumer)
+                EventListener { str ->
+                    run {
+                        message = str
+                    }
+                })
         subscription.subscribe()
         Thread.sleep(3000)
         sendSms()
         Thread.sleep(16000)
-        val argument = ArgumentCaptor.forClass(String::class.java)
-        verify<Consumer<String>>(consumer, atLeastOnce()).accept(argument.capture())
-        assertTrue(argument.value.contains("uuid"))
-        subscription.revoke()
+        assertNotNull(message)
+        assertTrue(message!!.contains("uuid"))
 
+        subscription.revoke()
         rc.revoke()
     }
 
@@ -109,10 +104,14 @@ class SubscriptionTest {
                 System.getenv("RINGCENTRAL_PASSWORD")
         )
 
-        val consumer: Consumer<String> = mock(Consumer::class.java) as Consumer<String>
+        var message: String? = null
         val subscription = Subscription(rc,
                 arrayOf("/restapi/v1.0/account/~/extension/~/message-store"),
-                consumer)
+                EventListener { str ->
+                    run {
+                        message = str
+                    }
+                })
         subscription.refresh() // should not cause any issue when _subscription is null
         subscription.subscribe()
         Thread.sleep(3000)
@@ -120,11 +119,10 @@ class SubscriptionTest {
         Thread.sleep(3000)
         sendSms()
         Thread.sleep(16000)
-        val argument = ArgumentCaptor.forClass(String::class.java)
-        verify<Consumer<String>>(consumer, atLeastOnce()).accept(argument.capture())
-        assertTrue(argument.value.contains("uuid"))
-        subscription.revoke()
+        assertNotNull(message)
+        assertTrue(message!!.contains("uuid"))
 
+        subscription.revoke()
         rc.revoke()
     }
 
@@ -143,10 +141,14 @@ class SubscriptionTest {
                 System.getenv("RINGCENTRAL_PASSWORD")
         )
 
-        val consumer: Consumer<String> = mock(Consumer::class.java) as Consumer<String>
+        var message: String? = null
         val subscription = Subscription(rc,
                 arrayOf("/restapi/v1.0/account/~/extension/~/message-store"),
-                consumer)
+                EventListener { str ->
+                    run {
+                        message = str
+                    }
+                })
         subscription.revoke() // should not cause any issue when _subscription is null
         subscription.subscribe()
         Thread.sleep(1000)
@@ -154,40 +156,7 @@ class SubscriptionTest {
         Thread.sleep(1000)
         sendSms()
         Thread.sleep(16000)
-        verify<Consumer<String>>(consumer, never()).accept(any())
-
-        rc.revoke()
-    }
-
-    @Test
-    @Throws(IOException::class, RestException::class, InterruptedException::class)
-    fun testStatusCallback() {
-        val rc = RestClient(
-                System.getenv("RINGCENTRAL_CLIENT_ID"),
-                System.getenv("RINGCENTRAL_CLIENT_SECRET"),
-                System.getenv("RINGCENTRAL_SERVER_URL")
-        )
-
-        rc.authorize(
-                System.getenv("RINGCENTRAL_USERNAME"),
-                System.getenv("RINGCENTRAL_EXTENSION"),
-                System.getenv("RINGCENTRAL_PASSWORD")
-        )
-
-        val consumer1: Consumer<String> = mock(Consumer::class.java) as Consumer<String>
-        val consumer2: Consumer<PNStatus> = mock(Consumer::class.java) as Consumer<PNStatus>
-        val consumer3: Consumer<PNPresenceEventResult> = mock(Consumer::class.java) as Consumer<PNPresenceEventResult>
-        val subscription = Subscription(rc,
-                arrayOf("/restapi/v1.0/account/~/extension/~/message-store"),
-                consumer1, consumer2, consumer3)
-        subscription.subscribe()
-        Thread.sleep(3000)
-        sendSms()
-        Thread.sleep(16000)
-        val argument = ArgumentCaptor.forClass(PNStatus::class.java)
-        verify<Consumer<PNStatus>>(consumer2, atLeastOnce()).accept(argument.capture())
-        assertEquals(argument.value.statusCode.toLong(), 200)
-        subscription.revoke()
+        assertNull(message)
 
         rc.revoke()
     }
@@ -207,10 +176,14 @@ class SubscriptionTest {
                 System.getenv("RINGCENTRAL_PASSWORD")
         )
 
-        val consumer: Consumer<String> = mock(Consumer::class.java) as Consumer<String>
+        var message: String? = null
         val subscription = Subscription(rc,
                 arrayOf("/restapi/v1.0/account/~/extension/~/message-store"),
-                consumer)
+                EventListener { str ->
+                    run {
+                        message = str
+                    }
+                })
         subscription.subscribe()
         val subInfo = subscription.subscription
         subInfo.expiresIn = 123L
@@ -218,11 +191,10 @@ class SubscriptionTest {
         Thread.sleep(6000)
         sendSms()
         Thread.sleep(16000)
-        val argument = ArgumentCaptor.forClass(String::class.java)
-        verify<Consumer<String>>(consumer, atLeastOnce()).accept(argument.capture())
-        assertTrue(argument.value.contains("uuid"))
-        subscription.revoke()
+        assertNotNull(message)
+        assertTrue(message!!.contains("uuid"))
 
+        subscription.revoke()
         rc.revoke()
     }
 }

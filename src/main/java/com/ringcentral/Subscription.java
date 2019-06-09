@@ -7,7 +7,6 @@ import com.pubnub.api.models.consumer.PNStatus;
 import com.pubnub.api.models.consumer.pubsub.PNMessageResult;
 import com.pubnub.api.models.consumer.pubsub.PNPresenceEventResult;
 import com.ringcentral.definitions.CreateSubscriptionRequest;
-import com.ringcentral.definitions.ModifySubscriptionRequest;
 import com.ringcentral.definitions.NotificationDeliveryModeRequest;
 import com.ringcentral.definitions.SubscriptionInfo;
 
@@ -16,7 +15,6 @@ import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.SecretKeySpec;
-import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
@@ -24,36 +22,30 @@ import java.util.Base64;
 import java.util.Collections;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.function.Consumer;
 
 public class Subscription {
-    private String[] events;
+    private String[] eventFilters;
     private RestClient restClient;
     private SubscribeCallback callback;
     private SubscriptionInfo _subscription;
     private Timer timer;
     private PubNub pubnub;
 
-    public Subscription(RestClient restClient, String[] events, Consumer<String> messageCallback, Consumer<PNStatus> statusCallback, Consumer<PNPresenceEventResult> presenceCallback) {
+    public Subscription(RestClient restClient, String[] eventFilters, EventListener eventListener) {
         this.restClient = restClient;
-        this.events = events;
+        this.eventFilters = eventFilters;
         callback = new SubscribeCallback() {
-            @Override
-            public void status(PubNub pubNub, PNStatus pnStatus) {
-                if (statusCallback != null) {
-                    statusCallback.accept(pnStatus);
-                }
+            public void status(PubNub pubnub, PNStatus status) {
             }
 
-            @Override
-            public void presence(PubNub pubNub, PNPresenceEventResult pnPresenceEventResult) {
-                if (presenceCallback != null) {
-                    presenceCallback.accept(pnPresenceEventResult);
-                }
+            public void presence(PubNub pubnub, PNPresenceEventResult presence) {
             }
 
             @Override
             public void message(PubNub pubNub, PNMessageResult pnMessageResult) {
+                if (eventListener == null) {
+                    return;
+                }
                 byte[] encrypted = Base64.getDecoder().decode(pnMessageResult.getMessage().getAsString());
                 final byte[] encryptionKey = Base64.getDecoder().decode(getSubscription().deliveryMode.encryptionKey);
                 Cipher cipher;
@@ -67,13 +59,9 @@ public class Subscription {
                     return;
                 }
                 String jsonString = new String(decrypted, StandardCharsets.UTF_8);
-                messageCallback.accept(jsonString);
+                eventListener.listen(jsonString);
             }
         };
-    }
-
-    public Subscription(RestClient restClient, String[] eventFilters, Consumer<String> callback) {
-        this(restClient, eventFilters, callback, null, null);
     }
 
     public SubscriptionInfo getSubscription() {
@@ -111,12 +99,11 @@ public class Subscription {
         if (getSubscription() == null) {
             return;
         }
-        SubscriptionInfo subscriptionInfo = restClient.restapi().subscription(getSubscription().id).put(getPutParameters());
+        SubscriptionInfo subscriptionInfo = restClient.restapi().subscription(getSubscription().id).renew().post();
         setSubscription(subscriptionInfo);
-
     }
 
-    public void revoke() throws IOException, RestException {
+    public void revoke() {
         if (getSubscription() == null) {
             return;
         }
@@ -130,12 +117,6 @@ public class Subscription {
     private CreateSubscriptionRequest getPostParameters() {
         return new CreateSubscriptionRequest()
                 .deliveryMode(new NotificationDeliveryModeRequest().transportType("PubNub").encryption(true))
-                .eventFilters(events);
-    }
-
-    private ModifySubscriptionRequest getPutParameters() {
-        return new ModifySubscriptionRequest()
-                .deliveryMode(new NotificationDeliveryModeRequest().transportType("PubNub").encryption(true))
-                .eventFilters(events);
+                .eventFilters(eventFilters);
     }
 }
