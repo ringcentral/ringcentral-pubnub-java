@@ -10,18 +10,15 @@ import com.ringcentral.RestClient
 import com.ringcentral.definitions.CreateSubscriptionRequest
 import com.ringcentral.definitions.NotificationDeliveryModeRequest
 import com.ringcentral.definitions.SubscriptionInfo
-
+import java.nio.charset.StandardCharsets
+import java.security.InvalidKeyException
+import java.security.NoSuchAlgorithmException
+import java.util.*
 import javax.crypto.BadPaddingException
 import javax.crypto.Cipher
 import javax.crypto.IllegalBlockSizeException
 import javax.crypto.NoSuchPaddingException
 import javax.crypto.spec.SecretKeySpec
-import java.nio.charset.StandardCharsets
-import java.security.InvalidKeyException
-import java.security.NoSuchAlgorithmException
-import java.util.Base64
-import java.util.Timer
-import java.util.TimerTask
 
 class Subscription(private val restClient: RestClient, private val eventFilters: Array<String>, eventListener: EventListener?) {
     private val callback: SubscribeCallback
