@@ -34,7 +34,7 @@ public class FaxPresenceTest {
         assert sub != null;
         assertEquals("Active", sub.status);
 
-        Thread.sleep(512000);
+        Thread.sleep(16000);
 
         rc.revoke();
     }

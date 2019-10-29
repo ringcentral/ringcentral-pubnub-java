@@ -4,11 +4,11 @@ plugins {
     id 'maven'
     id 'maven-publish'
     id 'java-library'
-    id 'org.jetbrains.kotlin.jvm' version '1.3.31'
+    id 'org.jetbrains.kotlin.jvm' version '1.3.50'
 }
 
 group 'com.ringcentral'
-version '1.0.0-beta10'
+version '1.0.0'
 
 sourceCompatibility = 1.8
 
@@ -17,8 +17,8 @@ repositories {
 }
 
 dependencies {
-    compile group: 'com.pubnub', name: 'pubnub-gson', version: '4.24.0'
-    compile group: 'com.ringcentral', name: 'ringcentral', version: '1.0.0-beta9'
+    compile group: 'com.pubnub', name: 'pubnub-gson', version: '4.29.1'
+    compile group: 'com.ringcentral', name: 'ringcentral', version: '1.0.0'
     testCompile group: 'junit', name: 'junit', version: '4.12'
     testRuntime group: 'ch.qos.logback', name: 'logback-classic', version: '1.2.3'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
@@ -67,7 +67,7 @@ publishing {
             artifact javadocJar
             groupId 'com.ringcentral'
             artifactId 'ringcentral-pubnub'
-            version '1.0.0-beta10'
+            version '1.0.0'
             pom.withXml {
                 def root = asNode()
                 root.appendNode('description', 'RingCentral PubNub SDK')
@@ -99,9 +99,9 @@ bintray {
         githubRepo = 'ringcentral/ringcentral-pubnub-java' //Optional Github repository
         githubReleaseNotesFile = 'README.md' //Optional Github readme file
         version {
-            name = '1.0.0-beta10'
-            desc = 'RingCentral PubNub SDK 1.0.0-beta10'
-            vcsTag = '1.0.0-beta10'
+            name = '1.0.0'
+            desc = 'RingCentral PubNub SDK 1.0.0'
+            vcsTag = '1.0.0'
             gpg {
                 sign = true
             }
