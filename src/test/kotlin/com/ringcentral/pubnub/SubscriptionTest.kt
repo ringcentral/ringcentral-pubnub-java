@@ -91,7 +91,7 @@ class SubscriptionTest {
         subscription.subscribe()
         Thread.sleep(3000)
         sendSms()
-        Thread.sleep(16000)
+        Thread.sleep(32000)
         assertNotNull(message2)
         assertTrue(message2!!.contains("uuid"))
 

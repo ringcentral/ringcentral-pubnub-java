@@ -3,6 +3,7 @@ package com.ringcentral.pubnub
 import com.pubnub.api.PNConfiguration
 import com.pubnub.api.PubNub
 import com.pubnub.api.callbacks.SubscribeCallback
+import com.pubnub.api.enums.PNReconnectionPolicy
 import com.pubnub.api.models.consumer.PNStatus
 import com.pubnub.api.models.consumer.pubsub.PNMessageResult
 import com.pubnub.api.models.consumer.pubsub.PNPresenceEventResult
@@ -12,6 +13,7 @@ import com.pubnub.api.models.consumer.pubsub.objects.PNMembershipResult
 import com.pubnub.api.models.consumer.pubsub.objects.PNSpaceResult
 import com.pubnub.api.models.consumer.pubsub.objects.PNUserResult
 import com.ringcentral.RestClient
+import com.ringcentral.RestException
 import com.ringcentral.definitions.CreateSubscriptionRequest
 import com.ringcentral.definitions.NotificationDeliveryModeRequest
 import com.ringcentral.definitions.SubscriptionInfo
@@ -101,6 +103,7 @@ class Subscription(private val restClient: RestClient, private val eventFilters:
         subscription = subscriptionInfo
         val pnConfiguration = PNConfiguration()
         pnConfiguration.subscribeKey = subscription!!.deliveryMode.subscriberKey
+        pnConfiguration.reconnectionPolicy = PNReconnectionPolicy.LINEAR
         pubnub = PubNub(pnConfiguration)
         pubnub!!.addListener(callback)
         pubnub!!.subscribe().channels(listOf(subscription!!.deliveryMode.address)).execute()
@@ -118,10 +121,17 @@ class Subscription(private val restClient: RestClient, private val eventFilters:
         if (subscription == null) {
             return
         }
-        pubnub!!.unsubscribe().channels(listOf(subscription!!.deliveryMode.address)).execute()
-        pubnub!!.removeListener(callback)
-        pubnub = null
-        restClient.restapi().subscription(subscription!!.id).delete()
-        subscription = null
+        try {
+            restClient.restapi().subscription(subscription!!.id).delete()
+        } catch (re: RestException) {
+            if (re.response.code() == 404) {
+                return
+            }
+            throw re
+        } finally {
+            pubnub!!.destroy()
+            pubnub = null
+            subscription = null
+        }
     }
 }
