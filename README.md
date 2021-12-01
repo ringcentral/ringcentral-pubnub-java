@@ -73,3 +73,25 @@ The notification `message` you get is a java `String`. If you know the message b
 ```java
 com.ringcentral.Utils.gson.fromJson(message, InstanceMessageEvent.class);
 ```
+
+
+## For maintainers
+
+
+### Test
+
+```
+./gradlew test
+```
+
+### Release
+
+Update version number in `build.gradle`.
+
+```
+./gradlew uploadArchives
+```
+
+Go to https://s01.oss.sonatype.org/#stagingRepositories
+
+Login, "Close" and "Release" the SDK.
