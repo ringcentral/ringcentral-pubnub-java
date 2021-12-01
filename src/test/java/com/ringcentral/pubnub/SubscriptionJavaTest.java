@@ -178,7 +178,7 @@ public class SubscriptionJavaTest {
         SubscriptionInfo subInfo = subscription.getSubscription();
         assert subInfo != null;
         subInfo.expiresIn = 123L;
-        subscription.setSubscription$ringcentral_pubnub_java(subInfo);
+        subscription.setSubscription(subInfo);
         Thread.sleep(6000);
         sendSms();
         Thread.sleep(16000);
