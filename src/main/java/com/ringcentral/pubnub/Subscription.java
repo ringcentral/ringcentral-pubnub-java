@@ -17,7 +17,6 @@ import com.ringcentral.RestException;
 import com.ringcentral.definitions.CreateSubscriptionRequest;
 import com.ringcentral.definitions.NotificationDeliveryModeRequest;
 import com.ringcentral.definitions.SubscriptionInfo;
-import org.jetbrains.annotations.NotNull;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
@@ -45,22 +44,22 @@ public class Subscription {
         this.restClient = restClient;
         this.eventFilters = eventFilters;
         callback = new SubscribeCallback() {
-            public void status(@NotNull PubNub pubnub, @NotNull PNStatus pnStatus){}
+            public void status(PubNub pubnub, PNStatus pnStatus){}
 
-            public void presence(@NotNull PubNub pubnub, @NotNull PNPresenceEventResult pnPresenceEventResult){}
+            public void presence(PubNub pubnub, PNPresenceEventResult pnPresenceEventResult){}
 
-            public void signal(@NotNull PubNub pubnub, @NotNull PNSignalResult pnSignalResult){}
+            public void signal(PubNub pubnub, PNSignalResult pnSignalResult){}
 
-            public void user(@NotNull PubNub pubnub, @NotNull PNUserResult pnUserResult){}
+            public void user(PubNub pubnub, PNUserResult pnUserResult){}
 
-            public void space(@NotNull PubNub pubnub, @NotNull PNSpaceResult pnSpaceResult){}
+            public void space(PubNub pubnub, PNSpaceResult pnSpaceResult){}
 
-            public void membership(@NotNull PubNub pubnub, @NotNull PNMembershipResult pnMembershipResult){}
+            public void membership(PubNub pubnub, PNMembershipResult pnMembershipResult){}
 
-            public void messageAction(@NotNull PubNub pubnub, @NotNull PNMessageActionResult pnMessageActionResult){}
+            public void messageAction(PubNub pubnub, PNMessageActionResult pnMessageActionResult){}
 
             @Override
-            public void message(@NotNull PubNub pubnub, @NotNull PNMessageResult pnMessageResult) {
+            public void message(PubNub pubnub, PNMessageResult pnMessageResult) {
                 if (eventListener == null) {
                     return;
                 }

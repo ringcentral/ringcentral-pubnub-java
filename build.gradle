@@ -1,13 +1,13 @@
 plugins {
     id 'java'
-    id 'com.jfrog.bintray' version '1.8.4'
     id 'maven'
-    id 'maven-publish'
     id 'java-library'
+    id 'signing'
 }
 
 group 'com.ringcentral'
 version '1.0.0'
+archivesBaseName = "ringcentral-pubnub"
 
 sourceCompatibility = 1.8
 
@@ -16,93 +16,78 @@ repositories {
 }
 
 dependencies {
-    compile group: 'com.pubnub', name: 'pubnub-gson', version: '4.29.1'
-    compile group: 'com.ringcentral', name: 'ringcentral', version: '2.4.0'
-    testCompile group: 'junit', name: 'junit', version: '4.12'
-    testRuntime group: 'ch.qos.logback', name: 'logback-classic', version: '1.2.3'
+    implementation group: 'com.pubnub', name: 'pubnub-gson', version: '4.29.1'
+    implementation group: 'com.ringcentral', name: 'ringcentral', version: '2.4.0'
+    testImplementation group: 'junit', name: 'junit', version: '4.12'
+    testImplementation group: 'ch.qos.logback', name: 'logback-classic', version: '1.2.3'
 }
 
-def pomConfig = {
-    licenses {
-        license {
-            name "MIT"
-            url "https://opensource.org/licenses/MIT"
-            distribution "repo"
-        }
-    }
-    developers {
-        developer {
-            id "tylerlong"
-            name "Tyler Liu"
-            email "tyler.liu@ringcentral.com"
-        }
-    }
-    scm {
-        url "https://github.com/ringcentral/ringcentral-pubnub-java"
-    }
+javadoc {
+    options.addBooleanOption('html5', true)
 }
 
-task sourcesJar(type: Jar, dependsOn: classes) {
+task javadocJar(type: Jar) {
+    classifier = 'javadoc'
+    from javadoc
+}
+task sourcesJar(type: Jar) {
     classifier = 'sources'
     from sourceSets.main.allSource
 }
-
-task javadocJar(type: Jar, dependsOn: javadoc) {
-    classifier = 'javadoc'
-    from javadoc.destinationDir
-}
-
 artifacts {
-    archives sourcesJar
-    archives javadocJar
+    archives javadocJar, sourcesJar
+}
+signing {
+    sign configurations.archives
 }
 
-publishing {
-    publications {
-        MyPublication(MavenPublication) {
-            from components.java
-            artifact sourcesJar
-            artifact javadocJar
-            groupId 'com.ringcentral'
-            artifactId 'ringcentral-pubnub'
-            version '1.0.0'
-            pom.withXml {
-                def root = asNode()
-                root.appendNode('description', 'RingCentral PubNub SDK')
-                root.appendNode('name', 'ringcentral-pubnub')
-                root.appendNode('url', 'https://github.com/ringcentral/ringcentral-pubnub-java')
-                root.children().last() + pomConfig
-            }
-        }
-    }
+java {
+    withJavadocJar()
+    withSourcesJar()
 }
 
-bintray {
-    user = project.hasProperty('bintrayUser') ? property('bintrayUser') : System.getenv('BINTRAY_USER')
-    key = project.hasProperty('bintrayApiKey') ? property('bintrayApiKey') : System.getenv('BINTRAY_API_KEY')
-    publications = ['MyPublication']
-    publish = true
-    override = true
-    pkg {
-        repo = 'maven'
-        name = 'ringcentral-pubnub'
-        userOrg = user
-        desc = 'RingCentral PubNub SDK'
-        licenses = ['MIT']
-        websiteUrl = 'https://github.com/ringcentral/ringcentral-pubnub-java'
-        issueTrackerUrl = 'https://github.com/ringcentral/ringcentral-pubnub-java/issues'
-        vcsUrl = 'https://github.com/ringcentral/ringcentral-pubnub-java.git'
-        labels = ['RingCentral', 'PubNub']
-        publicDownloadNumbers = true
-        githubRepo = 'ringcentral/ringcentral-pubnub-java' //Optional Github repository
-        githubReleaseNotesFile = 'README.md' //Optional Github readme file
-        version {
-            name = '1.0.0'
-            desc = 'RingCentral PubNub SDK 1.0.0'
-            vcsTag = '1.0.0'
-            gpg {
-                sign = true
+uploadArchives {
+  repositories {
+    mavenDeployer {
+      beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+
+      repository(url: "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/") {
+        if (project.hasProperty('ossrhUsername')) {
+            authentication(userName: ossrhUsername, password: ossrhPassword)
+        }
+      }
+
+      snapshotRepository(url: "https://s01.oss.sonatype.org/content/repositories/snapshots/") {
+        if (project.hasProperty('ossrhUsername')) {
+            authentication(userName: ossrhUsername, password: ossrhPassword)
+        }
+      }
+
+      pom.project {
+        name 'RingCentral PubNub SDK'
+        packaging 'jar'
+        artifactId 'ringcentral-pubnub'
+        description 'RingCentral PubNub SDK for Java'
+        url 'https://github.com/ringcentral/ringcentral-pubnub-java'
+        licenses {
+            license {
+                name "MIT"
+                url "https://opensource.org/licenses/MIT"
             }
         }
+        developers {
+            developer {
+                id 'tylerliu'
+                name 'Tyler Liu'
+                email 'tyler.liu@ringcentral.com'
+            }
+        }
+        scm {
+            connection 'scm:git:git://git@github.com:ringcentral/ringcentral-pubnub-java.git'
+            developerConnection 'scm:git:ssh://git@github.com:ringcentral/ringcentral-pubnub-java.git'
+            url 'https://github.com/ringcentral/ringcentral-pubnub-java'
+        }
+      }
     }
+  }
 }
