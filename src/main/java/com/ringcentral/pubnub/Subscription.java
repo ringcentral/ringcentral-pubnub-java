@@ -5,13 +5,14 @@ import com.pubnub.api.PubNub;
 import com.pubnub.api.callbacks.SubscribeCallback;
 import com.pubnub.api.enums.PNReconnectionPolicy;
 import com.pubnub.api.models.consumer.PNStatus;
+import com.pubnub.api.models.consumer.objects_api.channel.PNChannelMetadataResult;
+import com.pubnub.api.models.consumer.objects_api.membership.PNMembershipResult;
+import com.pubnub.api.models.consumer.objects_api.uuid.PNUUIDMetadataResult;
 import com.pubnub.api.models.consumer.pubsub.PNMessageResult;
 import com.pubnub.api.models.consumer.pubsub.PNPresenceEventResult;
 import com.pubnub.api.models.consumer.pubsub.PNSignalResult;
+import com.pubnub.api.models.consumer.pubsub.files.PNFileEventResult;
 import com.pubnub.api.models.consumer.pubsub.message_actions.PNMessageActionResult;
-import com.pubnub.api.models.consumer.pubsub.objects.PNMembershipResult;
-import com.pubnub.api.models.consumer.pubsub.objects.PNSpaceResult;
-import com.pubnub.api.models.consumer.pubsub.objects.PNUserResult;
 import com.ringcentral.RestClient;
 import com.ringcentral.RestException;
 import com.ringcentral.definitions.CreateSubscriptionRequest;
@@ -45,18 +46,13 @@ public class Subscription {
         this.eventFilters = eventFilters;
         callback = new SubscribeCallback() {
             public void status(PubNub pubnub, PNStatus pnStatus){}
-
             public void presence(PubNub pubnub, PNPresenceEventResult pnPresenceEventResult){}
-
             public void signal(PubNub pubnub, PNSignalResult pnSignalResult){}
-
-            public void user(PubNub pubnub, PNUserResult pnUserResult){}
-
-            public void space(PubNub pubnub, PNSpaceResult pnSpaceResult){}
-
-            public void membership(PubNub pubnub, PNMembershipResult pnMembershipResult){}
-
+            public void uuid( PubNub pubnub,  PNUUIDMetadataResult pnUUIDMetadataResult) {}
+            public void channel( PubNub pubnub,  PNChannelMetadataResult pnChannelMetadataResult) {}
+            public void membership( PubNub pubnub,  PNMembershipResult pnMembershipResult) {}
             public void messageAction(PubNub pubnub, PNMessageActionResult pnMessageActionResult){}
+            public void file( PubNub pubnub,  PNFileEventResult pnFileEventResult) {}
 
             @Override
             public void message(PubNub pubnub, PNMessageResult pnMessageResult) {
