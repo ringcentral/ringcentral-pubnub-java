@@ -6,7 +6,7 @@ plugins {
 }
 
 group 'com.ringcentral'
-version '1.1.0'
+version '1.2.0'
 archivesBaseName = "ringcentral-pubnub"
 
 sourceCompatibility = 1.8
@@ -18,8 +18,8 @@ repositories {
 dependencies {
     implementation group: 'com.pubnub', name: 'pubnub-gson', version: '5.2.3'
     implementation group: 'com.ringcentral', name: 'ringcentral', version: '2.4.0'
-    testImplementation group: 'junit', name: 'junit', version: '4.12'
-    testImplementation group: 'ch.qos.logback', name: 'logback-classic', version: '1.2.3'
+    testImplementation group: 'junit', name: 'junit', version: '4.13.2'
+    testImplementation group: 'ch.qos.logback', name: 'logback-classic', version: '1.2.7'
 }
 
 javadoc {
