@@ -16,7 +16,7 @@ import com.pubnub.api.models.consumer.pubsub.message_actions.PNMessageActionResu
 import com.ringcentral.RestClient;
 import com.ringcentral.RestException;
 import com.ringcentral.definitions.CreateSubscriptionRequest;
-import com.ringcentral.definitions.NotificationDeliveryModeRequest;
+import com.ringcentral.definitions.NotificationDeliveryMode;
 import com.ringcentral.definitions.SubscriptionInfo;
 
 import javax.crypto.BadPaddingException;
@@ -143,7 +143,7 @@ public class Subscription {
 
     private CreateSubscriptionRequest getPostParameters() {
         return new CreateSubscriptionRequest()
-                .deliveryMode(new NotificationDeliveryModeRequest().transportType("PubNub").encryption(true))
+                .deliveryMode(new NotificationDeliveryMode().transportType("PubNub").encryption(true))
                 .eventFilters(eventFilters);
     }
 }

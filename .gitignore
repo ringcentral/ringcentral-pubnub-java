@@ -3,3 +3,5 @@
 build/
 .secret
 gradle.properties
+bin/
+.vscode/
