@@ -24,9 +24,6 @@ dependencies {
 }
 ```
 
-Don't forget to replace `[version]` with expected version. You can find the latest versions in [Maven Central](https://search.maven.org/search?q=a:ringcentral).
-
-
 ### Maven
 
 ```xml
@@ -37,12 +34,7 @@ Don't forget to replace `[version]` with expected version. You can find the late
 </dependency>
 ```
 
-Don't forget to replace `[version]` with expected version. You can find the latest versions in [Maven Central](https://search.maven.org/search?q=a:ringcentral).
-
-
-### Manually
-
-[Download jar here](https://search.maven.org/classic/#search%7Cga%7C1%7Ca%3A%22ringcentral-pubnub%22) and save it into your java classpath.
+Don't forget to replace `[version]` with the expected version. You can find the latest versions in [Maven Central](https://central.sonatype.com/search?q=ringcentral-pubnub).
 
 
 ## Usage
@@ -68,7 +60,7 @@ subscription.subscribe();
 
 #### Deserialize notification message
 
-The notification `message` you get is a java `String`. If you know the message body type, you can deserialize it like this:
+The notification `message` you get is a Java `String`. If you know the message body type, you can deserialize it like this:
 
 ```java
 com.ringcentral.Utils.gson.fromJson(message, InstanceMessageEvent.class);
@@ -86,10 +78,10 @@ com.ringcentral.Utils.gson.fromJson(message, InstanceMessageEvent.class);
 
 ### Release
 
-Update version number in `build.gradle`.
+Update the version number in `build.gradle`.
 
 ```
-./gradlew uploadArchives
+./gradlew publish
 ```
 
 Go to https://s01.oss.sonatype.org/#stagingRepositories
