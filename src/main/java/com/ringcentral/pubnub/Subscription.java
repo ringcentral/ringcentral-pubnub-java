@@ -16,7 +16,7 @@ import com.pubnub.api.models.consumer.pubsub.message_actions.PNMessageActionResu
 import com.ringcentral.RestClient;
 import com.ringcentral.RestException;
 import com.ringcentral.definitions.CreateSubscriptionRequest;
-import com.ringcentral.definitions.NotificationDeliveryMode;
+import com.ringcentral.definitions.NotificationDeliveryModeRequest;
 import com.ringcentral.definitions.SubscriptionInfo;
 
 import javax.crypto.BadPaddingException;
@@ -33,6 +33,12 @@ import java.util.Collections;
 import java.util.Timer;
 import java.util.TimerTask;
 
+/**
+ * @deprecated
+ * This library is deprecated.
+ * Use https://github.com/ringcentral/ringcentral-websocket-java instead.
+ */
+@Deprecated
 public class Subscription {
     private String[] eventFilters;
     private RestClient restClient;
@@ -143,7 +149,7 @@ public class Subscription {
 
     private CreateSubscriptionRequest getPostParameters() {
         return new CreateSubscriptionRequest()
-                .deliveryMode(new NotificationDeliveryMode().transportType("PubNub").encryption(true))
+                .deliveryMode(new NotificationDeliveryModeRequest().transportType("PubNub").encryption(true))
                 .eventFilters(eventFilters);
     }
 }
